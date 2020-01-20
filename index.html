@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>LibreEdit</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/javascript" src="whammy.js"></script>
+</head>
+<body oncontextmenu="contextMenu(event)" onclick="bodyClick()">
+
+<div id="topBar">
+	<div class="item">
+		<b>LibreEdit</b>
+	</div>
+	<div id="openFile" class="item" onclick="openFile()">
+		Open media
+	</div>
+</div>
+
+<div id="imported"></div>
+
+<div id="videoPlayer">
+	<canvas id="player" onmouseover="player.mouseOver = true" onmouseleave="player.mouseOver = false">
+		Outdated Browser :(
+	</canvas>
+	<div id="playerUI">
+		<center>
+			<img src="assets/rewind.svg">
+			<img src="assets/play.svg" onclick="togglePlayer(this)">
+			<img src="assets/fast-forward.svg">
+		</center>
+	</div>
+</div>
+
+<div id="timeline">
+	<div id="time"></div>
+	<div class="section" id="video" ondrop="timelineDrag(event, 'ondrop')" ondragover="timelineDrag(event, 'ondragover')"></div>
+	<div class="section" id="audio"></div>
+</div>
+
+<div id="mediaElements"></div>
+
+<div id="contextMenu">
+	<div class="item" id="mediaEffectsButton">Effects</div>
+	<div class="item" id="inspectElement">Inspect</div>
+</div>
+
+<div id="mediaEffects">
+	<div class="top">
+		<span id="mediaEffectsTitle">Effects for </span>
+		<img src="assets/x.svg" width="30" onclick="this.parentElement.parentElement.style.display = 'none'">
+	</div>
+	<div class="content">
+		asd
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="javascript.js"></script>
+</html>

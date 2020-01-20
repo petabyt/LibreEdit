@@ -1,0 +1,179 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	font-family: sans-serif;
+	overflow: hidden;
+}
+
+#imported {
+	width: 200px;
+	height: 390px;
+	border: 2px solid black;
+	position: absolute;
+	top: 50px;
+	left: 10px;
+}
+
+.importedVideo {
+	width: 200px;
+	height: 100px;
+	border-bottom: 2px solid black;
+	padding: 30px 30px;
+	box-sizing: border-box;
+	user-select: none;
+	cursor: move;
+}
+
+#videoPlayer {
+	position: absolute;
+	top: 50px;
+	right: 10px;
+}
+#player {
+	width: 640px;
+	height: 360px;
+	border: 2px solid black;
+}
+
+#playerUI {
+	border: 2px solid black;
+	border-top: transparent;
+	width: 640px;
+	height: 30px;
+	margin-top: -4px;
+}
+
+#playerUI img {
+	height: 30px;
+	width: 30px;
+	cursor: pointer;
+}
+
+#playerUI img:hover {
+	background: #ededed;
+}
+
+#timeline {
+	margin-left: 0px;
+	margin-right: 10px;
+	width: calc(100% - 25px);
+	height: 300px;
+	border: 2px solid black;
+
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+
+#timeline .section {
+	width: 100%;
+	height: 150px;
+}
+
+#time {
+	position: absolute;
+	width: 3px;
+	height: 300px;
+	background: green;
+	left: 5px;
+}
+
+#audio {
+	border-top: 2px solid black;
+}
+
+.media {
+	width: 100px;
+	height: 140px;
+	border: 2px solid black;
+	margin-top: 2.5px;
+	margin-left: 2.5px;
+	display: inline-grid; /* Its like table-cell, but allows for margins */
+}
+
+#mediaElements {
+	width: 10px;
+	height: 10px;
+	overflow: hidden;
+	visibility: hidden;
+	position: absolute;
+}
+
+#contextMenu {
+	position: absolute;
+	width: 200px;
+	height: 300px;
+	border: 1px solid black;
+	background: lightgrey;
+	display: none;
+}
+
+#contextMenu .item {
+	width: 100%;
+	height: 50px;
+	padding: 16px;
+	text-align: center;
+	border-bottom: 1px solid black;
+	box-sizing: border-box;
+	user-select: none;
+	cursor: pointer;
+}
+
+#topBar {
+	width: 100%;
+	height: 30px;
+	border-bottom: 2px solid black;
+}
+
+#topBar .item {
+	width: 100px;
+	height: 30px;
+	border-right: 2px solid black;
+	text-align: center;
+	padding: 5px;
+	box-sizing: border-box;
+	user-select: none;
+	cursor: pointer;
+	display: table-cell;
+}
+
+.item:hover {
+	background: darkgrey;
+}
+
+#mediaEffects {
+	position: absolute;
+	width: calc(100% - 40px);
+	height: calc(100% - 40px);
+	border: 2px solid black;
+	background: white;
+	top: 20px;
+	left: 20px;
+	display: none;
+}
+
+#mediaEffects .top {
+	width: 100%;
+	height: 40px;
+	border-bottom: 2px solid black;
+	padding: 4px 4px;
+	box-sizing: border-box;
+}
+
+#mediaEffects .content {
+	width: 100%;
+	height: 100%;
+	padding: 10px 10px;
+}
+
+#mediaEffects .top span {
+	font-size: 25px;
+}
+
+#mediaEffects .top img {
+	float: right;
+	cursor: pointer;
+}
