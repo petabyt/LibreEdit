@@ -68,6 +68,15 @@ function updateCurrentClip() {
 	}
 }
 
+function mediaEffects(event) {
+	var mediaEffects = document.getElementById("mediaEffects");
+	var name = event.target.parentElement.getAttribute("name");
+
+	mediaEffects.style.display = "block";
+	mediaEffects.querySelectorAll(".content").innerHTML = "foo bar";
+	mediaEffects.querySelectorAll(".mediaEffectsTitle")[0].innerHTML = "Effects for " + name;
+}
+
 // Add media with some test edits
 function addMedia(name) {
 	var media = imported[name];

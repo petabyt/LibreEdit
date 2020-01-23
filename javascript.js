@@ -111,6 +111,9 @@ function contextMenu(event) {
 		} else if (target.className == "media") {
 			// right click on timeline media
 			mediaEffectsButton.display = "block";
+
+			// Pass name of media (gets to effects window)
+			menu.setAttribute("name", target.getAttribute("name"));
 		}
 	}
 }
