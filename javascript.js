@@ -178,15 +178,13 @@ function mediaEffects(event) {
 				input.value = effectDuplicates[e].text; // Temporary
 				input.setAttribute("effectNum", e); // Add effect ID to avoid exact duplicates
 
-				// Code Executed when enter is pressed
+				// Code Executed when key pressed
 				input.onkeydown = function(event) {
-					if (event.key == "Enter") {
-						// Get what element the user is typing on
-						var thisElem = event.target;
-						var id = thisElem.getAttribute("effectNum");
+					// Get what element the user is typing on
+					var thisElem = event.target;
+					var id = thisElem.getAttribute("effectNum");
 
-						timeline[mediaNum].effects[input.type][id].text = thisElem.value;
-					}
+					timeline[mediaNum].effects[input.type][id].text = thisElem.value;
 				}
 
 				addedEffect.appendChild(input);
@@ -198,7 +196,7 @@ function mediaEffects(event) {
 
 	var availableEffects = mediaEffects.querySelectorAll(".availableEffects")[0];
 	availableEffects.innerHTML = ""; // Clear before editing
-	
+
 	var availableEffectList = Object.keys(engine.effects); // generate list of all effects
 
 	// Make a list of available effects to add
