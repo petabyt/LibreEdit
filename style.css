@@ -19,7 +19,7 @@ html, body {
 	width: 200px;
 	height: 100px;
 	border-bottom: 2px solid black;
-	padding: 30px 30px;
+	padding: 20px 20px;
 	box-sizing: border-box;
 	user-select: none;
 	cursor: move;
@@ -58,7 +58,7 @@ html, body {
 	margin-left: 0px;
 	margin-right: 10px;
 	width: calc(100% - 25px);
-	height: 300px;
+	height: calc(100% - 440px - 50px);
 	border: 2px solid black;
 
 	position: absolute;
@@ -70,13 +70,13 @@ html, body {
 
 #timeline .section {
 	width: 100%;
-	height: 150px;
+	height: 50%;
 }
 
 #time {
 	position: absolute;
 	width: 3px;
-	height: 300px;
+	height: 100%;
 	background: green;
 	left: 5px;
 }
@@ -167,6 +167,45 @@ html, body {
 	width: 100%;
 	height: 100%;
 	padding: 10px 10px;
+}
+
+#mediaEffects .addedEffect {
+	width: 400px;
+	height: 100px;
+	border-bottom: 2px solid black;
+	padding: 20px 20px;
+	box-sizing: border-box;
+}
+
+#mediaEffects .availableEffects {
+	width: calc(100% - 450px);
+	height: calc(100% - 70px);
+	border: 2px solid black;
+	float: right;
+	margin-right: 20px;
+}
+
+/* Notice the added s difference */
+#mediaEffects .addedEffects {
+	width: 400px;
+	height: calc(100% - 70px);
+	border: 2px solid black;
+	display: table-cell;
+	float: left;
+}
+
+#mediaEffects .availableEffect {
+	width: 100px;
+	height: 100px;
+	border: 2px solid black;
+	display: table-cell;
+	margin-top: 10px;
+	margin-left: 10px;
+	display: block;
+	padding: 5px 5px;
+	box-sizing: border-box;
+	cursor: pointer;
+	user-select: none;
 }
 
 #mediaEffects .top span {

@@ -10,6 +10,7 @@ var timeline = [
 var player = {
 	playing: false,
 	currentClip: 0,
+	currentClipId: 0,
 	clipTime: 0, // Time into current clip
 	time: 0, // Time overall (for everything)
 	loop: 0, // Setinterval loop for playing video
@@ -25,59 +26,63 @@ var timelineUI = {
 // Initial background loop
 window.onload = function() {
 	setInterval(function() {
-		ui.updateTimeline();
+		updateTimeline();
 	}, 1);
 }
 
-// These functions interact with the UI, and update it
-var ui = {
-	addMediaImported: function(name) {
-		var imported = document.getElementById("imported");
+// Add an imported video into the imported DIV
+function addMediaImported(name) {
+	var imported = document.getElementById("imported");
 
-		// Put file into imported
-		// This will appear in the imported DIV
-		var mediaElement = document.createElement("DIV");
-		mediaElement.className = "importedVideo";
-		mediaElement.innerHTML = name;
-		mediaElement.draggable = "true";
+	// Put file into imported
+	// This will appear in the imported DIV
+	var mediaElement = document.createElement("DIV");
+	mediaElement.className = "importedVideo";
+	mediaElement.innerHTML = name;
+	mediaElement.draggable = "true";
 
-		// Send name when dragging
-		mediaElement.ondragstart = function(event) {
-			event.dataTransfer.setData("Text", name);
-		}
-
-		mediaElement.onclick = function() {
-			addMedia(name);
-		}
-
-		imported.appendChild(mediaElement);
-	},
-	updateTimeline: function(name) {
-		var video = document.getElementById("video");
-
-		// Go through entire timeline
-		for (var i = 0; i < timeline.length; i++) {
-			var name = timeline[i].name;
-
-			// Check if media is in timeline
-			// if not, then create it
-			// THIS DOESN'T WORK WITH MULTIPLE OF ONE MEDIA
-			// anternative: go through all elements and check if there
-			if (video.querySelectorAll("[name='" + name + "']").length == 0) {
-
-				var mediaElement = document.createElement("DIV");
-				mediaElement.className = "media";
-				mediaElement.setAttribute("name", name);
-				mediaElement.innerHTML = name;
-				mediaElement.style.width = imported[name].duration / timelineUI.zoom + "px";
-				video.appendChild(mediaElement);
-			} else {
-				
-			}
-		}
-
-		var currentTime = player.currentMediaElement.currentTime; // why is this here?
+	// Send name when dragging
+	mediaElement.ondragstart = function(event) {
+		event.dataTransfer.setData("Text", name);
 	}
+
+	mediaElement.onclick = function() {
+		addMedia(name);
+	}
+
+	imported.appendChild(mediaElement);
+}
+
+// Go through the timeline array, and make sure everything
+// is up to date in the DIV
+function updateTimeline(name) {
+	var video = document.getElementById("video");
+
+	// Go through entire timeline
+	for (var i = 0; i < timeline.length; i++) {
+		var name = timeline[i].name;
+		var id = timeline[i].id;
+
+		// Check if media is in timeline
+		// if not, then create it
+		var nameExists = video.querySelectorAll("[name='" + name + "']");
+		var idExists = video.querySelectorAll("[mediaid='" + id + "']");
+
+		if (nameExists.length == 0 && idExists.length == 0) {
+
+			var mediaElement = document.createElement("DIV");
+			mediaElement.className = "media";
+			mediaElement.setAttribute("name", name);
+			mediaElement.setAttribute("mediaID", id);
+			mediaElement.innerHTML = name;
+			mediaElement.style.width = imported[name].duration / timelineUI.zoom + "px";
+			video.appendChild(mediaElement);
+		} else {
+			
+		}
+	}
+
+	var currentTime = player.currentMediaElement.currentTime; // why is this here?
 }
 
 // This function handles imported media to timeline dragging
@@ -114,6 +119,7 @@ function contextMenu(event) {
 
 			// Pass name of media (gets to effects window)
 			menu.setAttribute("name", target.getAttribute("name"));
+			menu.setAttribute("mediaID", target.getAttribute("mediaID"));
 		}
 	}
 }
@@ -130,5 +136,68 @@ function togglePlayer(elem) {
 	} else {
 		player.playing = true;
 		elem.src = "assets/pause.svg"
+	}
+}
+
+// Open and change media effects popup
+function mediaEffects(event) {
+	var mediaEffects = document.getElementById("mediaEffects");
+	var name = event.target.parentElement.getAttribute("name");
+	var id = event.target.parentElement.getAttribute("mediaID");
+
+	// Initial popup info
+	mediaEffects.style.display = "block";
+	mediaEffects.querySelectorAll(".content").innerHTML = id;
+	mediaEffects.querySelectorAll(".mediaEffectsTitle")[0].innerHTML = "Effects for " + name;
+	
+	// prepare to append effects data to addedeffects
+	var addedEffects = mediaEffects.querySelectorAll(".addedEffects")[0];
+	var mediaNum = getFromTimeline(name, id);
+	var effects = timeline[mediaNum].effects;
+	var effectList = Object.keys(effects);
+
+	// For each effect added, make a div
+	for (var i = 0; i < effectList.length; i++) {
+		var addedEffect = document.createElement("DIV");
+		addedEffect.className = "addedEffect";
+		addedEffect.innerHTML += effectList[i] + "<br>";
+
+		var effectInputs = engine.effects[effectList[i]].inputs;
+
+		// Detect what input elements are needed
+		for (var i = 0; i < effectInputs.length; i++) {
+			var input = document.createElement("INPUT");
+			input.type = effectInputs[i].type;
+			input.placeholder = effectInputs[i].type;
+
+			addedEffect.appendChild(input);
+		}
+
+		addedEffects.appendChild(addedEffect);
+	}
+
+	var availableEffects = mediaEffects.querySelectorAll(".availableEffects")[0];
+	var availableEffectList = Object.keys(engine.effects); // generate list of all effects
+
+	// Make a list of available effects to add
+	for (var i = 0; i < availableEffectList.length; i++) {
+		var effect = engine.effects[availableEffectList];
+
+		var effectDiv = document.createElement("DIV");
+		effectDiv.className = "availableEffect";
+		effectDiv.innerHTML = effect.name + "<br>" + effect.desc;
+
+		availableEffects.appendChild(effectDiv);
+	}
+}
+
+// Function to get the media order from the timeline (with id)
+function getFromTimeline(name, id) {
+	for (var i = 0; i < timeline.length; i++) {
+		if (timeline[i].name == name && timeline[i].id == id) {
+			return i
+		}
+
+		return "Not found"
 	}
 }

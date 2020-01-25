@@ -1,3 +1,19 @@
+var engine = {
+	id: 0, // Increasing number for duplicate media, effects
+	effects: {
+		text: {
+			name: "Text",
+			desc: "Custom text overlay",
+			inputs: [
+				{
+					type: "text",
+					changes: "text"
+				}
+			]
+		}
+	}
+}
+
 // Render player (soon to be in other places)
 function renderPlayer() {
 	var currentClip = timeline[player.currentClip];
@@ -29,7 +45,7 @@ function renderPlayer() {
 				c.drawImage(player.currentMediaElement, 0, 0, canvas.width, canvas.height);
 
 				// Render text
-				var text = currentClip.overlay.text;
+				var text = currentClip.effects.text;
 				if (text.length !== 0) {
 					for (var i = 0; i < text.length; i++) {
 						var current = text[i];
@@ -68,24 +84,16 @@ function updateCurrentClip() {
 	}
 }
 
-function mediaEffects(event) {
-	var mediaEffects = document.getElementById("mediaEffects");
-	var name = event.target.parentElement.getAttribute("name");
-
-	mediaEffects.style.display = "block";
-	mediaEffects.querySelectorAll(".content").innerHTML = "foo bar";
-	mediaEffects.querySelectorAll(".mediaEffectsTitle")[0].innerHTML = "Effects for " + name;
-}
-
-// Add media with some test edits
+// Add media to timeline
 function addMedia(name) {
 	var media = imported[name];
 
 	timeline.push({
 		name: name,
+		id: engine.id,
 		duration: media.duration,
 		type: media.type,
-		overlay: {
+		effects: {
 			text: [
 				{
 					text: "Hello, World!",
@@ -98,7 +106,9 @@ function addMedia(name) {
 		}
 	});
 
-	// Start render
+	engine.id++
+
+	// Start render (like a thumbnail)
 	renderPlayer();
 }
 
@@ -135,7 +145,7 @@ function openFile() {
 				duration: 10
 			}
 
-			ui.addMediaImported(name);
+			addMediaImported(name);
 
 		} else if (acceptedVideo.includes(type)) {
 			var video = document.createElement("VIDEO");
@@ -153,7 +163,7 @@ function openFile() {
 					duration: duration
 				}
 
-				ui.addMediaImported(name);
+				addMediaImported(name);
 			});
 		} else {
 			alert("Media type not supported");
