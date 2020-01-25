@@ -150,33 +150,55 @@ function mediaEffects(event) {
 	mediaEffects.querySelectorAll(".content").innerHTML = id;
 	mediaEffects.querySelectorAll(".mediaEffectsTitle")[0].innerHTML = "Effects for " + name;
 	
-	// prepare to append effects data to addedeffects
 	var addedEffects = mediaEffects.querySelectorAll(".addedEffects")[0];
+	addedEffects.innerHTML = ""; // Clear before editing
+	
+	// Prepare to append effects data to addedeffects
 	var mediaNum = getFromTimeline(name, id);
 	var effects = timeline[mediaNum].effects;
 	var effectList = Object.keys(effects);
 
-	// For each effect added, make a div
+	// For each effect added, make a config div
 	for (var i = 0; i < effectList.length; i++) {
-		var addedEffect = document.createElement("DIV");
-		addedEffect.className = "addedEffect";
-		addedEffect.innerHTML += effectList[i] + "<br>";
+		var effectDuplicates = effects[effectList[i]];
 
-		var effectInputs = engine.effects[effectList[i]].inputs;
+		// Loop through effect duplicates (more of 1 effect)
+		for (var e = 0; e < effectDuplicates.length; e++) {
+			var addedEffect = document.createElement("DIV");
+			addedEffect.className = "addedEffect";
+			addedEffect.innerHTML += effectList[i] + "<br>";
 
-		// Detect what input elements are needed
-		for (var i = 0; i < effectInputs.length; i++) {
-			var input = document.createElement("INPUT");
-			input.type = effectInputs[i].type;
-			input.placeholder = effectInputs[i].type;
+			var effectInputs = engine.effects[effectList[i]].inputs; // Generate list of current effect inputs
 
-			addedEffect.appendChild(input);
+			// Add INPUT for each input type
+			for (var n = 0; n < effectInputs.length; n++) {
+				var input = document.createElement("INPUT");
+				input.type = effectInputs[n].type;
+				input.placeholder = "Input " + input.type;
+				input.value = effectDuplicates[e].text; // Temporary
+				input.setAttribute("effectNum", e); // Add effect ID to avoid exact duplicates
+
+				// Code Executed when enter is pressed
+				input.onkeydown = function(event) {
+					if (event.key == "Enter") {
+						// Get what element the user is typing on
+						var thisElem = event.target;
+						var id = thisElem.getAttribute("effectNum");
+
+						timeline[mediaNum].effects[input.type][id].text = thisElem.value;
+					}
+				}
+
+				addedEffect.appendChild(input);
+			}
+
+			addedEffects.appendChild(addedEffect);
 		}
-
-		addedEffects.appendChild(addedEffect);
 	}
 
 	var availableEffects = mediaEffects.querySelectorAll(".availableEffects")[0];
+	availableEffects.innerHTML = ""; // Clear before editing
+	
 	var availableEffectList = Object.keys(engine.effects); // generate list of all effects
 
 	// Make a list of available effects to add

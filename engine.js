@@ -96,9 +96,16 @@ function addMedia(name) {
 		effects: {
 			text: [
 				{
-					text: "Hello, World!",
+					text: "0",
 					x: 50,
 					y: 50,
+					font: "30px Arial",
+					color: "white"
+				},
+				{
+					text: "1",
+					x: 90,
+					y: 90,
 					font: "30px Arial",
 					color: "white"
 				}
