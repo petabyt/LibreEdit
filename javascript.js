@@ -169,7 +169,7 @@ function timeIntoTimeline() {
 	if (player.currentClip == 0) {
 		return time
 	} else {
-		for (var i = 0; i < timeline.length - player.currentClip; i++) {
+		for (var i = 0; i < timeline.length - 1 - player.currentClip; i++) {
 			time += timeline[i].duration;
 		}
 

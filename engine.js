@@ -132,14 +132,14 @@ function addMedia(name) {
 		effects: {
 			text: [
 				{
-					text: "0",
+					text: "Hello!",
 					x: 50,
 					y: 50,
 					font: "30px Arial",
 					color: "white"
 				},
 				{
-					text: "1",
+					text: "Hola!",
 					x: 90,
 					y: 90,
 					font: "30px Arial",
@@ -172,8 +172,8 @@ function openFile() {
 		var typeSplit = name.split(".");
 		var type = typeSplit[typeSplit.length - 1];
 
-		var acceptedVideo = ["mp4", "mov"];
-		var acceptedImages = ["png", "jpg"];
+		var acceptedVideo = ["mp4", "mov", "mkv"];
+		var acceptedImages = ["png", "jpg", "jpeg"];
 
 		// Detect if media is image or video
 		if (acceptedImages.includes(type)) {
