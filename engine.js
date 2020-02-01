@@ -8,19 +8,39 @@ var engine = {
 				{
 					type: "text",
 					changes: "text"
+				},
+				{
+					type: "color",
+					changes: "color"
 				}
 			]
 		}
 	}
 }
 
+var player = {
+	playing: false,
+	currentClip: 0,
+	currentDimensions: {
+		mediaX: 0,
+		mediaY: 0,
+		mediaWidth: 0,
+		mediaHeight: 0
+	},
+	clipTime: 0, // Time into current clip
+	time: 0, // Time overall (for everything)
+	allTime: 0, // Calculated duration of everything in timeline
+	loop: 0, // Setinterval loop for playing video
+	currentMediaElement: 0, // Current video element to grab from
+	mouseOver: false,
+	imageTime: .005, // "Frame rate" of images
+	displayEffects: true,
+}
+
 // Render player (soon to be in other places)
 function renderPlayer() {
-	var currentClip = timeline[player.currentClip];
-	var mediaElements = document.getElementById("mediaElements");
-
-	// This doesn't require ID, because 2 of the same video elements are the same
-	var media = mediaElements.querySelectorAll("[filename='" + currentClip.name + "']")[0];
+	
+	updateMediaElement();
 
 	var canvas = document.getElementById("player");
 	var c = canvas.getContext("2d");
@@ -31,11 +51,8 @@ function renderPlayer() {
 	if (player.loop == 0) {
 		player.loop = setInterval(function() {
 
-			// Update media source (yes, the same code again)
-			currentClip = timeline[player.currentClip];
-			var media = mediaElements.querySelectorAll("[filename='" + currentClip.name + "']")[0];
-
-			player.currentMediaElement = media;
+			// This is done while playing, the one before isn't constant
+			var media = updateMediaElement();
 
 			// First, we calculate the dimensions of the media
 			// Video elements use .videoWidth, and images use .width
@@ -57,7 +74,15 @@ function renderPlayer() {
 			var mediaX = (640 - mediaWidth) / 2;
 			var mediaY = (360 - mediaHeight) / 2;
 
+			// Set player dimensions (for other functions mainly)
+			player.currentDimensions.mediaX = mediaX;
+			player.currentDimensions.mediaY = mediaY;
+			player.currentDimensions.mediaWidth = mediaWidth;
+			player.currentDimensions.mediaHeight = mediaHeight;
+
+			var currentClip = timeline[player.currentClip];
 			if (player.playing) {
+
 				// Increase player time
 				if (currentClip.type == "video") {
 					player.currentMediaElement.play(); // Make sure it's playing
@@ -66,18 +91,10 @@ function renderPlayer() {
 					player.clipTime += player.imageTime;
 				}
 
-				c.drawImage(player.currentMediaElement, mediaX, mediaY, mediaWidth, mediaHeight);
+				playerFrame(c);
 
-				// Render text
-				var text = currentClip.effects.text;
-				if (text.length !== 0) {
-					for (var i = 0; i < text.length; i++) {
-						var current = text[i];
-
-						c.font = current.font;
-						c.fillStyle = current.color;
-						c.fillText(current.text, current.x, current.y);
-					}
+				if (player.displayEffects) {
+					drawEffects(currentClip.effects, c);
 				}
 			} else {
 				if (currentClip.type == "video") {
@@ -94,23 +111,37 @@ function renderPlayer() {
 	}
 }
 
-// Tell the player with the current played clip is
+// Draw effects from obj onto a canvas elem
+// This DOESNT accept a raw canvas element, only the 2d context
+function drawEffects(effects, c) {
+	// Render text
+	var text = effects.text;
+	if (text.length !== 0) {
+		for (var i = 0; i < text.length; i++) {
+			var current = text[i];
+
+			c.font = current.font;
+			c.fillStyle = current.color;
+			c.fillText(current.text, current.x, current.y);
+		}
+	}
+}
+
+// Tell the player with the current playing clip is (based off of time into current clip)
 function updateCurrentClip() {
 	var currentMedia = timeline[player.currentClip];
 	var time = currentMedia.duration;
 	player.allTime = timelineLength();
 
-	// Current time is larger than current clip duration, switch to next clip
+	// Current clip time is larger than current clip duration, switch to next clip
 	// The video element and clipTime aren't perfectly synced, so .01 wiggle room is needed
 	if (player.clipTime > time - .01) {
 
 		player.clipTime = 0;
 
-		console.log("0")
 		// Detect if this is the last media, and switch to next or first
 		if (player.currentClip + 1 == timeline.length || timeline.length == 1) {
 			player.currentClip = 0;
-			console.log("1");
 		} else {
 			player.currentClip++
 		}
@@ -132,18 +163,18 @@ function addMedia(name) {
 		effects: {
 			text: [
 				{
-					text: "Hello!",
+					text: "Woah, a video editor in Javascript?",
 					x: 50,
 					y: 50,
 					font: "30px Arial",
-					color: "white"
+					color: "#ffffff"
 				},
 				{
-					text: "Hola!",
+					text: "That's too cool!",
 					x: 90,
 					y: 90,
 					font: "30px Arial",
-					color: "white"
+					color: "#ff0000"
 				}
 			]
 		}
@@ -213,4 +244,44 @@ function openFile() {
 			alert("Media type not supported");
 		}
 	}
+}
+
+// This either draws the current frame onto the player, or grabs an unedited frame
+function playerFrame(c) {
+	// If not set, create new CANVAS element
+	var canvas, set;
+	set = c; // For later use
+	if (!c) {
+		canvas = document.createElement("CANVAS");
+		canvas.width = "640";
+		canvas.height = "360";
+		c = canvas.getContext("2d");
+		document.body.appendChild(canvas);
+	}
+
+	c.drawImage(
+		player.currentMediaElement,
+		player.currentDimensions.mediaX,
+		player.currentDimensions.mediaY,
+		player.currentDimensions.mediaWidth,
+		player.currentDimensions.mediaHeight
+	);
+
+	// If not set again, convert and return
+	if (!set) {
+		document.body.removeChild(canvas);
+
+		return canvas
+	}
+}
+
+// Find the video/image element to render player to
+// Update it, and return it
+function updateMediaElement() {
+	var currentClip = timeline[player.currentClip];
+	var mediaElements = document.getElementById("mediaElements");
+
+	var mediaElement = mediaElements.querySelectorAll("[filename='" + currentClip.name + "']")[0];
+	player.currentMediaElement = mediaElement;
+	return mediaElement
 }

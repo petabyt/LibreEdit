@@ -169,17 +169,26 @@ html, body {
 	padding: 10px 10px;
 }
 
+#mediaEffects .content .effectsPreview {
+	float: right;
+	margin-top: -400px;
+}
+
 #mediaEffects .addedEffect {
 	width: 400px;
 	height: 100px;
 	border-bottom: 2px solid black;
-	padding: 20px 20px;
+	padding: 10px 10px;
 	box-sizing: border-box;
+}
+
+#mediaEffects .addedEffect input {
+	display: block;
 }
 
 #mediaEffects .availableEffects {
 	width: calc(100% - 450px);
-	height: calc(100% - 70px);
+	height: 250px;
 	border: 2px solid black;
 	float: right;
 	margin-right: 20px;
