@@ -527,7 +527,7 @@ window.Whammy = (function(){
 			tmpCanvas.height = this.frames[0].image.height;
 
 			var encodeFrame = function(index){
-				console.log('encodeFrame', index);
+				
 				var frame = frames[index];
 				tmpContext.putImageData(frame.image, 0, 0);
 				frame.image = tmpCanvas.toDataURL('image/webp', this.quality);

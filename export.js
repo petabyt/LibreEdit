@@ -1,35 +1,71 @@
-function exportVideo() {
-	var playerElem = document.getElementById("player");
+var whammy = {
+	export: 0,
+	fps: 0,
+	toExport: 0,
+	quality: 0
+};
+
+function exportVideo(fps, quality) {
+	whammy.fps = fps;
+	whammy.quality = quality;
+
+	// Start from the beginning
 	player.currentClip = 0;
 	player.clipTime = 0;
+	player.exporting = true;
 
-	var vid = new Whammy.Video(23);
+	whammy.export = new Whammy.Video(fps, quality);
 
 	// Add frames to video
-	console.log("Started rendering")
-	player.playing = true;
-	var exporting = setInterval(function() {
-		vid.add(playerElem);
-		console.log("Added Frame");
-	}, 1);
+	console.log("Started rendering");
 
-	// Stop adding frames once finished
-	setTimeout(function() {
-		console.log("Done adding frames. Exporting to webm...");
-		clearInterval(exporting);
-		player.playing = false;
+	// Add frame 0, increase time, wait 10 miliseconds, and repeat
+	var wait = setInterval(function() {
+		if (timelineLength() - .1 < timeIntoTimeline() || !player.exporting) { // Need .1 second wiggle room, since intervals aren't perfectly synced
+			clearInterval(wait);
 
-		// Convert and compile into download link
-		vid.compile(false, function(webm) {
-			var link = document.createElement("A");
-			link.href = window.URL.createObjectURL(webm);
-			link.download = "myvideo.webm";
+			console.log("Done adding frames. Exporting " + whammy.toExport + " frames to WEBM...");
 
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
+			player.playing = false;
+			player.exporting = false;
 
-		});
+			// Convert and compile into download link
+			whammy.export.compile(false, function(webm) {
+				var link = document.createElement("A");
+				link.href = window.URL.createObjectURL(webm);
+				link.download = "myvideo.webm";
 
-	}, timeline[player.currentClip].duration * 1000 - 100)
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			});
+		}
+	}, 1)
+}
+
+// This function is callled on all video elements, after timeupdate
+function playerVideoUpdate() {
+	if (player.exporting) {
+
+		var playerElem = document.getElementById("player");
+
+		whammy.toExport++;
+
+		whammy.export.add(playerElem);
+		player.clipTime += 1/whammy.fps;
+	}
+}
+
+function renderPopup() {
+	makePopup({
+	    title: "Render Project",
+	    content: "",
+	    width: 400,
+	    height: 400,
+	    onopen: function(elem) {
+	    	elem.children[1].innerHTML += `
+	    		<button onclick='exportVideo(100, 480)'>Render default FPS, 480P</button>
+	    	`;
+	    }
+	});
 }

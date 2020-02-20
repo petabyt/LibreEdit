@@ -29,6 +29,7 @@ html, body {
 	position: absolute;
 	top: 50px;
 	right: 10px;
+	user-select: none;
 }
 #player {
 	width: 640px;
@@ -77,8 +78,7 @@ html, body {
 	position: absolute;
 	width: 3px;
 	height: 100%;
-	background: green;
-	left: 5px;
+	background: rgba(29, 169, 29, 0.64);
 }
 
 #audio {
@@ -86,12 +86,20 @@ html, body {
 }
 
 .media {
-	width: 100px;
 	height: 140px;
 	border: 2px solid black;
+	border-left: transparent;
 	margin-top: 2.5px;
-	margin-left: 2.5px;
-	display: inline-grid; /* Its like table-cell, but allows for margins */
+
+	display: inline-block;
+	word-wrap: break-word;
+	float: left;
+}
+
+.media img {
+	bottom: -80px;
+	float: right;
+	position: relative;
 }
 
 #mediaElements {
@@ -145,17 +153,20 @@ html, body {
 }
 
 #mediaEffects {
-	position: absolute;
 	width: calc(100% - 40px);
 	height: calc(100% - 40px);
-	border: 2px solid black;
-	background: white;
 	top: 20px;
 	left: 20px;
 	display: none;
 }
 
-#mediaEffects .top {
+.popup {
+	position: absolute;
+	border: 2px solid black;
+	background: white;
+}
+
+.popup .top {
 	width: 100%;
 	height: 40px;
 	border-bottom: 2px solid black;
@@ -163,20 +174,22 @@ html, body {
 	box-sizing: border-box;
 }
 
-#mediaEffects .content {
+.popup .content {
 	width: 100%;
 	height: 100%;
 	padding: 10px 10px;
 }
 
 #mediaEffects .content .effectsPreview {
-	float: right;
-	margin-top: -400px;
+	position: absolute;
+	width: calc(100% - 500px);
+	right: 40px;
+	bottom: 40px;
 }
 
 #mediaEffects .addedEffect {
 	width: 400px;
-	height: 100px;
+	height: 200px;
 	border-bottom: 2px solid black;
 	padding: 10px 10px;
 	box-sizing: border-box;
@@ -184,6 +197,7 @@ html, body {
 
 #mediaEffects .addedEffect input {
 	display: block;
+	margin-bottom: 10px;
 }
 
 #mediaEffects .availableEffects {
@@ -217,11 +231,13 @@ html, body {
 	user-select: none;
 }
 
-#mediaEffects .top span {
+.popup .top span {
 	font-size: 25px;
+	user-select: none;
 }
 
-#mediaEffects .top img {
+.popup .top img {
 	float: right;
 	cursor: pointer;
+	user-select: none;
 }

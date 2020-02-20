@@ -1,0 +1,8 @@
+body, html {
+	background: black;
+	color: white;
+}
+
+div {
+	border: 2px solid white;
+}

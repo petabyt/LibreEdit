@@ -1,9 +1,7 @@
 // This opens and updates the media effects popup
 
-function mediaEffects(event) {
+function mediaEffects(name, id) {
 	var mediaEffects = document.getElementById("mediaEffects");
-	var name = event.target.parentElement.getAttribute("name");
-	var id = event.target.parentElement.getAttribute("mediaID");
 	var content = mediaEffects.children[1]; // .content is second element in div
 
 	// Initial popup info
@@ -46,6 +44,15 @@ function mediaEffects(event) {
 			var addedEffect = document.createElement("DIV");
 			addedEffect.className = "addedEffect";
 			addedEffect.innerHTML += "<b>" + effectList[i] + "</b><br>";
+			addedEffect.setAttribute("id", id);
+			
+			var deleteButton = document.createElement("DIV");
+			deleteButton.innerHTML = "Delete";
+
+			deleteButton.onclick = function() {
+				deleteEffect(name, id, effectName, this.parent.getAttribute("id"));
+			}
+			addedEffect.appendChild(deleteButton);
 
 			var effectInputs = engine.effects[effectList[i]].inputs; // Generate list of current effect inputs
 
@@ -54,9 +61,12 @@ function mediaEffects(event) {
 				var input = document.createElement("INPUT");
 				input.type = effectInputs[n].type;
 				input.placeholder = "Input " + input.type;
-				input.value = effectDuplicates[e].text; // Temporary
+
 				input.setAttribute("effectNum", e); // Add effect ID to avoid exact duplicates
 				input.setAttribute("effectChanges", effectInputs[n].changes); // Give to input func what input to change
+
+				// Set default value
+				input.value = effectDuplicates[e][effectInputs[n].changes];
 
 				// Code Executed when key pressed
 				input.oninput = function(event) {
@@ -66,7 +76,8 @@ function mediaEffects(event) {
 					var effectChanges = thisElem.getAttribute("effectChanges");
 					var id = eval(thisElem.getAttribute("effectNum"));
 
-					// Update straight to video on timeline with handy variables
+
+					// Update straight to video on timeline with handy variables (numbers are as string)
 					timeline[mediaNum].effects[effectName][id][effectChanges] = thisElem.value;
 
 					// Update effects preview
@@ -95,7 +106,7 @@ function mediaEffects(event) {
 
 	// Make a list of available effects to add
 	for (var i = 0; i < availableEffectList.length; i++) {
-		var effect = engine.effects[availableEffectList];
+		var effect = engine.effects[availableEffectList[i]];
 
 		var effectDiv = document.createElement("DIV");
 		effectDiv.className = "availableEffect";

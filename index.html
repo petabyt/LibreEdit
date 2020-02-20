@@ -3,14 +3,16 @@
 <head>
 	<title>LibreEdit</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
+
 	<script type="text/javascript" src="whammy.js"></script>
 
 	<script type="text/javascript" src="javascript.js"></script>
 	<script type="text/javascript" src="engine.js"></script>
 	<script type="text/javascript" src="export.js"></script>
 	<script type="text/javascript" src="effectsPopup.js"></script>
+	<script type="text/javascript" src="popup.js"></script>
 </head>
-<body oncontextmenu="contextMenu(event)" onclick="bodyClick()">
+<body>
 
 <div id="topBar">
 	<div class="item">
@@ -19,7 +21,7 @@
 	<div id="openFile" class="item" onclick="openFile()">
 		Open media
 	</div>
-	<div id="openFile" class="item" onclick="exportVideo()">
+	<div id="openFile" class="item" onclick="renderPopup()">
 		Export
 	</div>
 </div>
@@ -47,12 +49,7 @@
 
 <div id="mediaElements"></div>
 
-<div id="contextMenu">
-	<div class="item" id="mediaEffectsButton" onclick="mediaEffects(event)">Effects</div>
-	<div class="item" id="inspectElement">Inspect</div>
-</div>
-
-<div id="mediaEffects">
+<div id="mediaEffects" class="popup">
 	<div class="top">
 		<span class="mediaEffectsTitle">Effects for </span>
 		<img src="assets/x.svg" width="30" onclick="this.parentElement.parentElement.style.display = 'none'">

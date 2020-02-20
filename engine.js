@@ -1,5 +1,5 @@
 var engine = {
-	id: 0, // Increasing number for duplicate media, effects
+	id: 2, // Increasing number for duplicate media, set to 2 for default stuff
 	effects: {
 		text: {
 			name: "Text",
@@ -13,6 +13,25 @@ var engine = {
 					type: "color",
 					changes: "color"
 				}
+				,
+				{
+					type: "number",
+					changes: "x"
+				},
+				{
+					type: "number",
+					changes: "y"
+				}
+			]
+		},
+		scale: {
+			name: "Scale",
+			desc: "Change the scale of something",
+			inputs: [
+				{
+					type: "number",
+					changes: "scale"
+				}
 			]
 		}
 	}
@@ -20,7 +39,7 @@ var engine = {
 
 var player = {
 	playing: false,
-	currentClip: 0,
+	currentClip: 0, // Number of clip (in timeline)
 	currentDimensions: {
 		mediaX: 0,
 		mediaY: 0,
@@ -35,6 +54,7 @@ var player = {
 	mouseOver: false,
 	imageTime: .005, // "Frame rate" of images
 	displayEffects: true,
+	exporting: false
 }
 
 // Render player (soon to be in other places)
@@ -80,29 +100,38 @@ function renderPlayer() {
 			player.currentDimensions.mediaWidth = mediaWidth;
 			player.currentDimensions.mediaHeight = mediaHeight;
 
-			var currentClip = timeline[player.currentClip];
-			if (player.playing) {
+			var clip = timeline[player.currentClip];
 
+			if (clip.currentTime == 0 && player.currentClip == 0) {
+				player.currentMediaElement.currentTime = clip.start;
+			}
+			if (player.playing) {
 				// Increase player time
-				if (currentClip.type == "video") {
+				if (clip.type == "video") {
 					player.currentMediaElement.play(); // Make sure it's playing
-					player.clipTime = player.currentMediaElement.currentTime; // Update time
-				} else if (currentClip.type == "image") {
+					player.clipTime = player.currentMediaElement.currentTime;
+				} else if (clip.type == "image") {
 					player.clipTime += player.imageTime;
 				}
-
-				playerFrame(c);
-
-				if (player.displayEffects) {
-					drawEffects(currentClip.effects, c);
-				}
 			} else {
-				if (currentClip.type == "video") {
+				if (clip.type == "video") {
 					player.currentMediaElement.pause();
+					
+					// This allows for the player to be updated without playing or pausing
+					player.currentMediaElement.currentTime = player.clipTime;
 				}
 			}
 
-			// Move time thing
+			// Clear the player canvas
+			c.clearRect(0, 0, canvas.width, canvas.height);
+
+			// The player renders the frame whether the video is playing or not.
+			playerFrame(c, clip.effects);
+			if (player.displayEffects) {
+				drawEffects(clip.effects, c);
+			}
+
+			// Move green line
 			var time = document.getElementById("time");
 			time.style.left = (timeIntoTimeline() / timelineUI.zoom) + "px";
 
@@ -111,8 +140,8 @@ function renderPlayer() {
 	}
 }
 
-// Draw effects from obj onto a canvas elem
-// This DOESNT accept a raw canvas element, only the 2d context
+// Draw effects JSON onto a canvas element (2d context)
+// These are only after render effects. Scale/crop are in playerFrame(c)
 function drawEffects(effects, c) {
 	// Render text
 	var text = effects.text;
@@ -122,8 +151,25 @@ function drawEffects(effects, c) {
 
 			c.font = current.font;
 			c.fillStyle = current.color;
-			c.fillText(current.text, current.x, current.y);
+
+			var newX = current.x;
+			if (current.sinTest) {
+				newX = Math.sin(player.clipTime * 10) * 10 + current.x;
+			}
+
+			c.fillText(current.text, newX, current.y);
 		}
+	}
+}
+
+// This returns the data for effects that are needed before the frame is drawn. Ex (new width, height, crop...)
+// Returns as +54 or -32, so they can be added
+function getBeforeEffects(effects) {
+
+	// Scale can only be used once, just use the first one
+	var scale = effects.scale;
+	if (scale.length !== 0) {
+		// ...
 	}
 }
 
@@ -136,18 +182,19 @@ function updateCurrentClip() {
 	// Current clip time is larger than current clip duration, switch to next clip
 	// The video element and clipTime aren't perfectly synced, so .01 wiggle room is needed
 	if (player.clipTime > time - .01) {
-
-		player.clipTime = 0;
-
 		// Detect if this is the last media, and switch to next or first
 		if (player.currentClip + 1 == timeline.length || timeline.length == 1) {
 			player.currentClip = 0;
 		} else {
-			player.currentClip++
+			player.currentClip++;
 		}
 
-		player.loop = 0;
-		renderPlayer(); // Updates canvas dimensions, current media element...
+		// Both manually reset both the player and media element
+		player.clipTime = 0;
+		player.currentMediaElement.currentTime = currentMedia.start; // Reset to start
+
+		// Updates the loop, canvas dimensions, current media element...
+		renderPlayer();
 	}
 }
 
@@ -163,24 +210,30 @@ function addMedia(name) {
 		effects: {
 			text: [
 				{
-					text: "Woah, a video editor in Javascript?",
+					id: 0,
+					text: "welcome to video",
 					x: 50,
 					y: 50,
 					font: "30px Arial",
-					color: "#ffffff"
+					color: "#ffffff",
+					sinTest: false
 				},
 				{
-					text: "That's too cool!",
+					id: 1,
+					text: "i am sped",
 					x: 90,
 					y: 90,
 					font: "30px Arial",
-					color: "#ff0000"
+					color: "#ff0000",
+					sinTest: true
 				}
 			]
-		}
+		},
+		start: 0,
+		end: 0
 	});
 
-	engine.id++
+	engine.id++;
 
 	// Start render (like a thumbnail)
 	renderPlayer();
@@ -203,7 +256,7 @@ function openFile() {
 		var typeSplit = name.split(".");
 		var type = typeSplit[typeSplit.length - 1];
 
-		var acceptedVideo = ["mp4", "mov", "mkv"];
+		var acceptedVideo = ["mp4", "mov", "mkv", "MOV"];
 		var acceptedImages = ["png", "jpg", "jpeg"];
 
 		// Detect if media is image or video
@@ -227,6 +280,11 @@ function openFile() {
 			video.setAttribute("filename", name);
 			video.src = content;
 			video.style.visibility = "hidden";
+
+			video.addEventListener("timeupdate", function() {
+				playerVideoUpdate();
+			});
+
 			document.getElementById("mediaElements").appendChild(video);
 
 			// Add video to imported videos once loaded
@@ -247,7 +305,8 @@ function openFile() {
 }
 
 // This either draws the current frame onto the player, or grabs an unedited frame
-function playerFrame(c) {
+// It accepts the same data as drawEffects(), but ignores uneccessary effects
+function playerFrame(c, effects) {
 	// If not set, create new CANVAS element
 	var canvas, set;
 	set = c; // For later use
@@ -284,4 +343,64 @@ function updateMediaElement() {
 	var mediaElement = mediaElements.querySelectorAll("[filename='" + currentClip.name + "']")[0];
 	player.currentMediaElement = mediaElement;
 	return mediaElement
+}
+
+function trimVideo(name, id, start, end) {
+	var media = timeline[getFromTimeline(name, id)];
+
+	media.start = start;
+	media.end = end;
+
+	// Reset duration
+	media.duration -= media.start + media.end;
+}
+
+// Function to get the media order from the timeline (with id)
+function getFromTimeline(name, id) {
+	for (var i = 0; i < timeline.length; i++) {
+		if (timeline[i].name == name && timeline[i].id == id) {
+			return i
+		}
+	}
+
+	return "Not found";
+}
+
+// Return length of timeline, in miliseconds
+function timelineLength() {
+	var duration = 0;
+	for (var i = 0; i < timeline.length; i++) {
+		duration += timeline[i].duration;
+	}
+
+	return duration;
+}
+
+// Return how long the player is into the video, out of timelineLength()
+function timeIntoTimeline() {
+	var time = player.clipTime;
+	
+	for (var i = 0; i < player.currentClip; i++) {
+		time += timeline[i].duration;
+	}
+
+	return time
+}
+
+function getEffect(name, id, type, effectId) {
+	var media = timeline[getFromTimeline(name, id)];
+	var effects = media.effects[type];
+
+	for (var i = 0; i < effects.length; i++) {
+		if (effects[i].id == effectId) {
+			return i;
+		}
+	}
+}
+
+function deleteEffect(name, id, type, effectId) {
+	var effect = getEffect(name, id, type, effectId);
+	var media = getFromTimeline(name, id);
+
+	timeline[media].effects[type] = timeline[media].effects[type].splice(effect, 1); // Come on, this could be cleaner
 }
