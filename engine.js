@@ -37,6 +37,7 @@ var engine = {
 	}
 }
 
+// For playing mechanics
 var player = {
 	playing: false,
 	currentClip: 0, // Number of clip (in timeline)
@@ -59,7 +60,7 @@ var player = {
 
 // Render player (soon to be in other places)
 function renderPlayer() {
-	
+
 	updateMediaElement();
 
 	var canvas = document.getElementById("player");
@@ -116,7 +117,7 @@ function renderPlayer() {
 			} else {
 				if (clip.type == "video") {
 					player.currentMediaElement.pause();
-					
+
 					// This allows for the player to be updated without playing or pausing
 					player.currentMediaElement.currentTime = player.clipTime;
 				}
@@ -211,21 +212,12 @@ function addMedia(name) {
 			text: [
 				{
 					id: 0,
-					text: "welcome to video",
+					text: "the big brown fox",
 					x: 50,
 					y: 50,
 					font: "30px Arial",
-					color: "#ffffff",
+					color: "black",
 					sinTest: false
-				},
-				{
-					id: 1,
-					text: "i am sped",
-					x: 90,
-					y: 90,
-					font: "30px Arial",
-					color: "#ff0000",
-					sinTest: true
 				}
 			]
 		},
@@ -264,7 +256,7 @@ function openFile() {
 			var image = document.createElement("IMG");
 			image.setAttribute("filename", name);
 			image.src = content;
-			
+
 			document.getElementById("mediaElements").appendChild(image);
 
 			// Add media to imported
@@ -379,7 +371,7 @@ function timelineLength() {
 // Return how long the player is into the video, out of timelineLength()
 function timeIntoTimeline() {
 	var time = player.clipTime;
-	
+
 	for (var i = 0; i < player.currentClip; i++) {
 		time += timeline[i].duration;
 	}

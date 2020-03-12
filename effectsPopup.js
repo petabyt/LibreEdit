@@ -8,7 +8,7 @@ function mediaEffects(name, id) {
 	mediaEffects.style.display = "block";
 	mediaEffects.querySelectorAll(".content").innerHTML = id;
 	mediaEffects.querySelectorAll(".mediaEffectsTitle")[0].innerHTML = "Effects for " + name;
-	
+
 	// Generate preview image (edits will be overlayed onto it)
 	var effectsPreview = playerFrame();
 	effectsPreview.className = "effectsPreview";
@@ -28,7 +28,7 @@ function mediaEffects(name, id) {
 
 	var addedEffects = mediaEffects.querySelectorAll(".addedEffects")[0];
 	addedEffects.innerHTML = ""; // Clear before editing
-	
+
 	// Prepare to append effects data to addedeffects
 	var mediaNum = getFromTimeline(name, id);
 	var effects = timeline[mediaNum].effects;
@@ -45,7 +45,7 @@ function mediaEffects(name, id) {
 			addedEffect.className = "addedEffect";
 			addedEffect.innerHTML += "<b>" + effectList[i] + "</b><br>";
 			addedEffect.setAttribute("id", id);
-			
+
 			var deleteButton = document.createElement("DIV");
 			deleteButton.innerHTML = "Delete";
 
@@ -85,8 +85,8 @@ function mediaEffects(name, id) {
 					image.src = beforeEdit;
 
 					image.onload = function() {
+						effectsPreviewC.clearRect(0, 0, effectsPreview.width, effectsPreview.height);
 						effectsPreviewC.drawImage(image, 0, 0, effectsPreview.width, effectsPreview.height);
-
 						drawEffects(timeline[mediaNum].effects, effectsPreviewC);
 					}
 

@@ -15,7 +15,15 @@
 <body>
 
 <div id="topBar">
-	<div class="item">
+	<div class="item" onclick='
+		makePopup({
+		    title: "LibreEdit - V0.1",
+		    content: "Main Developer - @Pufflegamerz",
+		    width: 400,
+		    height: 400,
+		    onopen: function() {}
+		});
+	'>
 		<b>LibreEdit</b>
 	</div>
 	<div id="openFile" class="item" onclick="openFile()">

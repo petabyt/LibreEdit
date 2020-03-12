@@ -70,7 +70,7 @@ html, body {
 }
 
 #timeline .section {
-	width: 100%;
+	width: 500%;
 	height: 50%;
 }
 
@@ -81,8 +81,12 @@ html, body {
 	background: rgba(29, 169, 29, 0.64);
 }
 
+#video {
+	border-bottom: 2px solid black;
+}
+
 #audio {
-	border-top: 2px solid black;
+	display: none;
 }
 
 .media {
@@ -96,10 +100,13 @@ html, body {
 	float: left;
 }
 
+.media span {
+	display: inline-block;
+	width: 100%;
+}
+
 .media img {
-	bottom: -80px;
-	float: right;
-	position: relative;
+
 }
 
 #mediaElements {
@@ -184,7 +191,8 @@ html, body {
 	position: absolute;
 	width: calc(100% - 500px);
 	right: 40px;
-	bottom: 40px;
+	bottom: 16px;
+	border: 2px solid black;
 }
 
 #mediaEffects .addedEffect {

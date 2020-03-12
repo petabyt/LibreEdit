@@ -4,7 +4,7 @@ var imported = {
 
 // This should match what is on the UI timeline
 var timeline = [
-	
+
 ]
 
 var timelineUI = {
@@ -60,9 +60,9 @@ function updateTimeline(name) {
 			var mediaElement = document.createElement("DIV");
 
 			mediaElement.className = "media";
-			mediaElement.innerHTML = name;
 			mediaElement.style.width = imported[name].duration / timelineUI.zoom + "px";
-
+			mediaElement.innerHTML += "<span>" + name + "</span>";
+			
 			mediaElement.setAttribute("name", name);
 			mediaElement.setAttribute("id", id);
 			mediaElement.setAttribute("duration", imported[name].duration);
@@ -79,8 +79,12 @@ function updateTimeline(name) {
 		} else {
 			var divActual = timeline[getFromTimeline(name, id)]; // The OBJ for the timeline div
 
+			// Provide live updates for timeline elements, like duration, width..
 			// Make sure timeline length is same as the timeline json
-			if (divActual.duration !== Number(nameExists[0].getAttribute("duration"))) {
+			var sameLength = divActual.duration !== Number(nameExists[0].getAttribute("duration"));
+			var sameWidth = nameExists[0].clientWidth * timelineUI.zoom !== divActual.duration;
+
+			if (sameWidth || sameLength) {
 				nameExists[0].style.width = divActual.duration / timelineUI.zoom + "px";
 			}
 		}
