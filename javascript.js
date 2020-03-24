@@ -62,7 +62,7 @@ function updateTimeline(name) {
 			mediaElement.className = "media";
 			mediaElement.style.width = imported[name].duration / timelineUI.zoom + "px";
 			mediaElement.innerHTML += "<span>" + name + "</span>";
-			
+
 			mediaElement.setAttribute("name", name);
 			mediaElement.setAttribute("id", id);
 			mediaElement.setAttribute("duration", imported[name].duration);
@@ -78,12 +78,15 @@ function updateTimeline(name) {
 			video.appendChild(mediaElement);
 		} else {
 			var divActual = timeline[getFromTimeline(name, id)]; // The OBJ for the timeline div
+			var divWidth = nameExists[0].style.width;
+			divWidth = divWidth.substring(0, divWidth.length - 2);
 
 			// Provide live updates for timeline elements, like duration, width..
 			// Make sure timeline length is same as the timeline json
+			// With .toFixed(4), that fixes 5.4300000001
 			var sameLength = divActual.duration !== Number(nameExists[0].getAttribute("duration"));
-			var sameWidth = nameExists[0].clientWidth * timelineUI.zoom !== divActual.duration;
-
+			var sameWidth = (divWidth * timelineUI.zoom).toFixed(4) * 10 * timelineUI.zoom !== divActual.duration;
+			
 			if (sameWidth || sameLength) {
 				nameExists[0].style.width = divActual.duration / timelineUI.zoom + "px";
 			}

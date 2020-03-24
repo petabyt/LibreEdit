@@ -199,38 +199,6 @@ function updateCurrentClip() {
 	}
 }
 
-// Add media to timeline
-function addMedia(name) {
-	var media = imported[name];
-
-	timeline.push({
-		name: name,
-		id: engine.id,
-		duration: media.duration,
-		type: media.type,
-		effects: {
-			text: [
-				{
-					id: 0,
-					text: "the big brown fox",
-					x: 50,
-					y: 50,
-					font: "30px Arial",
-					color: "black",
-					sinTest: false
-				}
-			]
-		},
-		start: 0,
-		end: 0
-	});
-
-	engine.id++;
-
-	// Start render (like a thumbnail)
-	renderPlayer();
-}
-
 // Open file and do thingies with it
 function openFile() {
 	var input = document.createElement("INPUT");
@@ -324,6 +292,52 @@ function playerFrame(c, effects) {
 
 		return canvas
 	}
+}
+
+
+// Add media to timeline
+function addMedia(name) {
+	var media = imported[name];
+
+	timeline.push({
+		name: name,
+		id: engine.id,
+		duration: media.duration,
+		type: media.type,
+		effects: {
+			text: [
+				{
+					id: 0,
+					text: "the big brown fox",
+					x: 50,
+					y: 50,
+					font: "30px Arial",
+					color: "black",
+					sinTest: false
+				}
+			]
+		},
+		start: 0,
+		end: 0
+	});
+
+	engine.id++;
+
+	// Start render (like a thumbnail)
+	renderPlayer();
+}
+
+// This function splits the current video in half, and creates another video element.
+function splitCurrent() {
+	var newClip = Object.assign({}, timeline[player.currentClip]); // Constant var to ignore changes
+
+	timeline[player.currentClip].duration = player.clipTime;
+	timeline[player.currentClip].end = player.clipTime;
+
+	newClip.id = engine.id;
+	newClip.start = player.clipTime;
+
+	timeline.splice(player.currentClip + 1, 0, newClip);
 }
 
 // Find the video/image element to render player to
