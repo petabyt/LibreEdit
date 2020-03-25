@@ -81,6 +81,12 @@ html, body {
 	background: rgba(29, 169, 29, 0.64);
 }
 
+#time:hover {
+	width: 4px;
+	background-color: green;
+	cursor: move;
+}
+
 #video {
 	border-bottom: 2px solid black;
 }
@@ -98,6 +104,8 @@ html, body {
 	display: inline-block;
 	word-wrap: break-word;
 	float: left;
+
+	user-select: none;
 }
 
 .media span {
@@ -105,8 +113,9 @@ html, body {
 	width: 100%;
 }
 
-.media img {
-
+.media img:hover {
+	background-color: lightgrey;
+	cursor: pointer;
 }
 
 #mediaElements {

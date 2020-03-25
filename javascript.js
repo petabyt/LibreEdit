@@ -1,3 +1,9 @@
+var mouse = {
+	down: false,
+	x: 0,
+	y: 0
+}
+
 var imported = {
 
 };
@@ -8,13 +14,21 @@ var timeline = [
 ]
 
 var timelineUI = {
-	zoom: .1 // Number to divide duration by
+	zoom: .1, // Number to divide duration by
+	timeMouseOver: false,
+	timeMouseDragging: false
 }
 
 // Initial background loop
 window.onload = function() {
 	setInterval(function() {
 		updateTimeline();
+
+		// Handle time div drag
+		if (timelineUI.timeMouseOver && mouse.down) {
+			var time = document.getElementById("time");
+			time.style.left = mouse.x + "px";
+		}
 	}, 1);
 }
 
@@ -51,12 +65,12 @@ function updateTimeline(name) {
 		var name = timeline[i].name;
 		var id = timeline[i].id;
 
-		// Check if media is in timeline. if not, create it
-		var nameExists = video.querySelectorAll("[name='" + name + "']");
-		var idExists = video.querySelectorAll("[id='" + id + "']");
+		// Check if media is in timeline
+		var divExists = video.querySelectorAll("[name='" + name + "'][id='" + id + "']");
+		var firstFind = divExists[0];
 
-		// If doesn't already exist
-		if (nameExists.length == 0 || idExists.length == 0) {
+		// If doesn't already exist, create it
+		if (divExists.length == 0) {
 			var mediaElement = document.createElement("DIV");
 
 			mediaElement.className = "media";
@@ -70,30 +84,40 @@ function updateTimeline(name) {
 			var effectButton = document.createElement("IMG");
 			effectButton.src = "assets/settings.svg";
 			effectButton.onclick = function() {
-				mediaEffects(this.parentElement.getAttribute("name"), this.parentElement.getAttribute("id"));
+				mediaEffects(
+					this.parentElement.getAttribute("name"),
+					this.parentElement.getAttribute("id")
+				);
 			}
 
 			mediaElement.appendChild(effectButton);
 
 			video.appendChild(mediaElement);
 		} else {
-			var divActual = timeline[getFromTimeline(name, id)]; // The OBJ for the timeline div
-			var divWidth = nameExists[0].style.width;
+			// The OBJ for the timeline div
+			var divActual = timeline[getFromTimeline(name, id)];
+			var divWidth = firstFind.style.width;
 			divWidth = divWidth.substring(0, divWidth.length - 2);
 
 			// Provide live updates for timeline elements, like duration, width..
+			var sameLength = divActual.duration !== Number(firstFind.getAttribute("duration"));
+
 			// Make sure timeline length is same as the timeline json
-			// With .toFixed(4), that fixes 5.4300000001
-			var sameLength = divActual.duration !== Number(nameExists[0].getAttribute("duration"));
-			var sameWidth = (divWidth * timelineUI.zoom).toFixed(4) * 10 * timelineUI.zoom !== divActual.duration;
-			
+			var sameWidth = divWidth * timelineUI.zoom !== divActual.duration;
+
+			// Change width of timeline div
 			if (sameWidth || sameLength) {
-				nameExists[0].style.width = divActual.duration / timelineUI.zoom + "px";
+				firstFind.style.width = divActual.duration / timelineUI.zoom + "px";
 			}
 		}
 	}
 
 	var currentTime = player.currentMediaElement.currentTime; // why is this here?
+}
+
+// Get width of timeline piece according to duration, start, end, and zoom
+function getWidth() {
+
 }
 
 // This function handles imported media to timeline dragging
@@ -119,4 +143,9 @@ function togglePlayer(elem) {
 		player.playing = true;
 		elem.src = "assets/pause.svg"
 	}
+}
+
+function getMouse(event) {
+	mouse.x = event.clientX - 13;
+	mouse.y = event.clientY;
 }

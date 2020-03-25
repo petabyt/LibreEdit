@@ -12,8 +12,11 @@
 	<script type="text/javascript" src="effectsPopup.js"></script>
 	<script type="text/javascript" src="popup.js"></script>
 </head>
-<body>
-
+<body
+	onmousemove="getMouse(event)"
+	onmousedown="mouse.down = true"
+	onmouseup="mouse.down = false"
+>
 <div id="topBar">
 	<div class="item" onclick='
 		makePopup({
@@ -42,15 +45,18 @@
 	</canvas>
 	<div id="playerUI">
 		<center>
-			<img src="assets/rewind.svg">
+			<img src="assets/rewind.svg" onclick="player.clipTime++">
 			<img src="assets/play.svg" onclick="togglePlayer(this)">
-			<img src="assets/fast-forward.svg">
+			<img src="assets/fast-forward.svg" onclick="player.clipTime++">
 		</center>
 	</div>
 </div>
 
 <div id="timeline">
-	<div id="time"></div>
+	<div id="time"
+		onmouseover="timelineUI.timeMouseOver = true"
+		onmouseleave="timelineUI.timeMouseOver = false"
+		></div>
 	<div class="section" id="video" ondrop="timelineDrag(event, 'ondrop')" ondragover="timelineDrag(event, 'ondragover')"></div>
 	<div class="section" id="audio"></div>
 </div>
